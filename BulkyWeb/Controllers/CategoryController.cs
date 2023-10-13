@@ -10,10 +10,10 @@ namespace BulkyWeb.Controllers
         public CategoryController(ApplicationDbContext db)
         {
             _db = db;
-        }
+        } 
         public IActionResult Index()
         {
-            List<Category> ObjCategoriesLst = _db.Categories.ToList();
+            List<Category> ObjCategoriesLst = _db.Categories.OrderBy(i => i.DisplayOrder).ToList();
             return View(ObjCategoriesLst);
         }
 
@@ -34,12 +34,77 @@ namespace BulkyWeb.Controllers
             if (ModelState.IsValid) {
                 _db.Categories.Add(ObjCategory);
                 _db.SaveChanges();
+                TempData["success"] = "Category Created Successfully !";
                 return RedirectToAction("Index", "Category");
             }
-            else
+
+             return View();
+        }
+
+        [HttpGet]
+        public IActionResult EditCategory(int? id)
+        {
+            if (id == null || id== 0)
             {
-                return View();
+                return NotFound();
             }
+            Category? EditCategory = _db.Categories.Find(id);
+            //Category? EditCategory1 = _db.Categories.FirstOrDefault(u=>u.Id == id);
+            //Category? EditCategory2 = _db.Categories.Where(u => u.Id == id).FirstOrDefault();
+
+            if (EditCategory == null )
+            {
+                return NotFound();
+            }
+
+            return View(EditCategory);
+        }
+
+        [HttpPost]
+        public IActionResult EditCategory(Category ObjCategory)
+        {
+            if (ModelState.IsValid)
+            {
+                _db.Categories.Update(ObjCategory);
+                _db.SaveChanges();
+                TempData["success"] = "Category Updated Successfully !";
+                return RedirectToAction("Index", "Category");
+            }
+
+             return View();
+        }
+        [HttpGet]
+        public IActionResult DeleteCategory(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            Category? DeleteCategory = _db.Categories.Find(id);
+            //Category? EditCategory1 = _db.Categories.FirstOrDefault(u=>u.Id == id);
+            //Category? EditCategory2 = _db.Categories.Where(u => u.Id == id).FirstOrDefault();
+
+            if (DeleteCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(DeleteCategory);          
+        }
+
+        [HttpPost,ActionName("DeleteCategory")]
+        public IActionResult DeleteAction(int? id)
+        {
+            Category? DeleteCategory = _db.Categories.Find(id);
+
+            if (DeleteCategory == null)
+            {
+                return NotFound();
+            }
+            _db.Categories.Remove(DeleteCategory);
+            _db.SaveChanges();
+            TempData["success"] = "Category Deleted Successfully !";
+            return RedirectToAction("Index", "Category");
         }
     }
 }

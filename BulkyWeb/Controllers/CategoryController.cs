@@ -27,7 +27,8 @@ namespace BulkyWeb.Controllers
         {
             if (ObjCategory.Name == ObjCategory.DisplayOrder.ToString())
             {
-                ModelState.AddModelError("Name","Display Order and Category Name cannot be same");
+                //ModelState.AddModelError("Name","Display Order and Category Name cannot be same !");
+                ModelState.AddModelError("", "Display Order and Category Name cannot be same !");
             }
 
             if (ModelState.IsValid) {
